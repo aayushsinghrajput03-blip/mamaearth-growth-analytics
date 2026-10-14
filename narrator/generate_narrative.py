@@ -133,9 +133,8 @@ def check_numeric_accuracy(narrative: str) -> bool:
 
 if __name__ == "__main__":
   findings_path = Path(__file__).resolve().parent / "findings.json"
-
-    with open(findings_path, "r", encoding="utf-8") as file:
-        findings = json.load(file)
+  with open(findings_path, "r", encoding="utf-8") as file:
+    findings = json.load(file)
 
     result = generate_scr_narrative(findings)
 
