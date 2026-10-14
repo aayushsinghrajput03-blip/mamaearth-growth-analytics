@@ -1,3 +1,5 @@
+from gettext import install
+
 import pandas as pd
 import json
 from pathlib import Path
@@ -104,13 +106,23 @@ print("After:", orders_clean.shape)
 
 print("\nTASK 4 - MISSING VALUES")
 
+# Count missing values before filling
+missing_discount = orders_clean["discount_pct"].isna().sum()
+missing_rating = orders_clean["rating"].isna().sum()
+
+print("Missing discount_pct before filling:", missing_discount)
+print("Missing rating before filling:", missing_rating)
+
+# Fill missing discount values with 0
 orders_clean["discount_pct"] = orders_clean["discount_pct"].fillna(0)
 
+# Fill missing ratings with the median
 rating_median = orders_clean["rating"].median()
-print("Rating median:", rating_median)
+print("Rating median used:", rating_median)
 
 orders_clean["rating"] = orders_clean["rating"].fillna(rating_median)
 
+# Confirm no missing values remain
 print("Remaining missing values:")
 print(orders_clean[["discount_pct", "rating"]].isnull().sum())
 
@@ -392,5 +404,3 @@ print("TASK 1 COMPLETED")
 print("findings.json created at:")
 print(findings_path)
 print("======================================")
-
-
