@@ -1,6 +1,5 @@
 import json
 import os
-from pathlib import Path
 from google import genai
 
 
@@ -26,9 +25,9 @@ with a return rate of {findings['highest_risk_segment']['return_rate_pct']}%.
 
 Resolution
 
-The verified revenue peak is March {findings['true_peak_month']['month']},
+The verified revenue peak is {__import__('datetime').datetime.strptime(findings['true_peak_month']['month'], '%Y-%m').strftime('%B %Y')},
 with revenue of ₹{findings['true_peak_month']['revenue_inr']:.2f}.
-The apparent peak in {findings['outlier_inflated_month']['month']} was
+The apparent peak in {__import__('datetime').datetime.strptime(findings['outlier_inflated_month']['month'], '%Y-%m').strftime('%B %Y')} was
 ₹{findings['outlier_inflated_month']['apparent_revenue_inr']:.2f},
 while the corrected revenue was ₹{findings['outlier_inflated_month']['corrected_revenue_inr']:.2f}.
 """
@@ -71,7 +70,9 @@ Verified findings:
 """
 
     try:
-        client = genai.Client()
+        client = genai.Client(
+            http_options={"timeout": 30000}
+)
 
         response = client.models.generate_content(
             model="gemini-2.5-flash",
@@ -95,8 +96,11 @@ Verified findings:
         }
 
     except Exception as err:
-        # API failure → deterministic offline fallback
-        return generate_scr_narrative_offline(findings)
+        return {
+            "status": "error",
+            "narrative": None,
+            "message": str(err)
+        }
 
 
 
@@ -132,11 +136,16 @@ def check_numeric_accuracy(narrative: str) -> bool:
     return all_passed
 
 if __name__ == "__main__":
-  findings_path = Path(__file__).resolve().parent / "findings.json"
-  with open(findings_path, "r", encoding="utf-8") as file:
-    findings = json.load(file)
+    findings_path = "findings.json"
+
+    with open(findings_path, "r", encoding="utf-8") as file:
+        findings = json.load(file)
 
     result = generate_scr_narrative(findings)
+    if result["status"] == "error":
+        print("Gemini API failed:", result["message"])
+        print("Using offline narrative instead.")
+        result = generate_scr_narrative_offline(findings)
 
     print("\nSTATUS:", result["status"])
     print("\nNARRATIVE:")
