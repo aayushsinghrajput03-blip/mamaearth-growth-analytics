@@ -1,7 +1,6 @@
 import json
 import os
-from google import genai
-from pathlib import Path
+
 
 
 def generate_scr_narrative_offline(findings: dict) -> dict:
@@ -71,9 +70,9 @@ Verified findings:
 """
 
     try:
+        from google import genai
         client = genai.Client(
-            http_options={"timeout": 30000}
-)
+            http_options={"timeout": 30000})
 
         response = client.models.generate_content(
             model="gemini-2.5-flash",
@@ -137,8 +136,8 @@ def check_numeric_accuracy(narrative: str) -> bool:
     return all_passed
 
 if __name__ == "__main__":
-    findings_path = Path(__file__).resolve().parent / "findings.json"
-    
+    findings_path = "findings.json"
+
     with open(findings_path, "r", encoding="utf-8") as file:
         findings = json.load(file)
 
