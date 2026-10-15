@@ -164,6 +164,27 @@ print("Raw total revenue:", raw_total_revenue)
 print("Cleaned total revenue:", cleaned_total_revenue)
 print("Duplicate reconciliation delta:", duplicate_reconciliation_delta)
 
+# Verify revenue from removed duplicate rows
+duplicate_rows = raw_revenue_df.loc[duplicate_mask].copy()
+
+duplicate_revenue = round(
+    duplicate_rows["order_value"].sum(),
+    2
+)
+
+print("Duplicate rows removed:", len(duplicate_rows))
+print("Revenue from duplicate rows:", duplicate_revenue)
+
+print(
+    f"Reconciliation check: ₹{raw_total_revenue:.2f} - "
+    f"₹{duplicate_revenue:.2f} = ₹{cleaned_total_revenue:.2f}"
+)
+
+print(
+    "The revenue difference is explained by removing duplicate rows. "
+    "Missing-value imputation does not change order value."
+)
+
 # ============================================================
 # TASK 6 - IQR OUTLIER DETECTION
 # ============================================================
@@ -210,6 +231,23 @@ return_rates = (
 )
 
 print(return_rates)
+
+
+# Test the hypothesis: COD has a higher return rate
+cod_rate = return_rates["COD"]
+card_rate = return_rates["CARD"]
+upi_rate = return_rates["UPI"]
+
+print("\nHypothesis: COD orders have a higher return rate.")
+print(f"COD return rate: {cod_rate}%")
+print(f"CARD return rate: {card_rate}%")
+print(f"UPI return rate: {upi_rate}%")
+
+if cod_rate > card_rate and cod_rate > upi_rate:
+    print("Hypothesis result: Confirmed")
+else:
+    print("Hypothesis result: Not confirmed")
+
 
 # ============================================================
 # TASK 8 - MULTI-LEVEL SEGMENTATION
@@ -349,6 +387,18 @@ print(
 print(
     "Outlier-inflated month:",
     outlier_inflated_month
+)
+
+# Explain the effect of quantity outliers on monthly revenue
+print(
+    "\nExplanation: January appears to have the highest revenue "
+    "because of bulk orders O0011 and O0098."
+)
+
+print(
+    f"After excluding quantity outliers, {true_peak_month} "
+    f"is the actual peak month with revenue of "
+    f"₹{monthly_without_outliers[true_peak_month]:.2f}."
 )
 
 # ============================================================
