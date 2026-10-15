@@ -1,6 +1,8 @@
 -- Mamaearth Growth Analytics - Reports
 
 -- (a) Total orders, total revenue and average order value
+-- Expected output: total_orders = 180, total_revenue = 99860.20,
+-- avg_order_value = 554.78
 SELECT
     COUNT(*) AS total_orders,
     ROUND(
@@ -21,6 +23,8 @@ JOIN products p
 
 
 -- (b) Total orders vs rated orders
+-- Expected output: total_orders = 180, total_rated_orders = 165,
+-- difference = 15
 SELECT
     COUNT(*) AS total_orders,
     COUNT(rating) AS total_rated_orders,
@@ -29,6 +33,7 @@ FROM orders;
 
 
 -- (c) Customers with zero orders
+-- Expected output: C045, Vihaan
 SELECT
     c.name,
     c.customer_id
@@ -40,6 +45,7 @@ HAVING COUNT(o.order_id) = 0;
 
 
 -- Alternative zero-order customer check
+-- Expected output: C045, Vihaan
 SELECT
     customer_id,
     name
@@ -51,6 +57,10 @@ WHERE customer_id NOT IN (
 
 
 -- (d) Cities with return rate above 20%
+-- Expected output:
+-- Jaipur     | 19 | 8  | 42.1%
+-- Lucknow    | 49 | 15 | 30.6%
+-- Bangalore  | 33 | 8  | 24.2%
 SELECT
     c.city,
     COUNT(*) AS total_orders,
@@ -68,6 +78,13 @@ ORDER BY return_rate_pct DESC;
 
 
 -- (e) Top 5 customers by total spend
+-- Expected output:
+-- C043 | Reyansh | 12920.00
+-- C026 | Isha    | 8371.60
+-- C008 | Meera   | 4564.60
+-- C011 | Arjun   | 4111.00
+-- C042 | Sanya   | 3785.00
+-- Tie-breaker: customer_id ASC when total_spend is equal.
 SELECT
     c.customer_id,
     c.name,
@@ -88,6 +105,10 @@ LIMIT 5;
 
 
 -- Customers ranked 3rd to 5th by total spend
+-- Expected output:
+-- C008 | Meera | 4564.60
+-- C011 | Arjun | 4111.00
+-- C042 | Sanya | 3785.00
 SELECT
     c.customer_id,
     c.name,
@@ -108,6 +129,11 @@ LIMIT 3 OFFSET 2;
 
 
 -- (f) Category-wise order count and revenue
+-- Expected output:
+-- Haircare     | 54 | 44956.10
+-- Skincare     | 60 | 27346.00
+-- Babycare     | 30 | 16805.00
+-- PersonalCare | 36 | 10753.10
 SELECT
     p.category,
     COUNT(*) AS order_count,
@@ -127,6 +153,7 @@ ORDER BY category_revenue DESC;
 
 
 -- (g) Customers whose names start with A
+-- Expected output: 10 rows
 SELECT
     name
 FROM customers
@@ -134,12 +161,14 @@ WHERE name LIKE 'A%';
 
 
 -- (h) Distinct acquisition sources
+-- Expected output: Ad, Organic, Referral, Social (4 rows)
 SELECT DISTINCT
     acquisition_source
 FROM customers;
 
 
 -- (i) Add loyalty tier based on city tier
+-- Expected output after UPDATE: Gold = 28, Silver = 17
 ALTER TABLE customers
 ADD COLUMN loyalty_tier VARCHAR(10);
 
