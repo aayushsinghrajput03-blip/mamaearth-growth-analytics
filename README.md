@@ -79,9 +79,8 @@ Run:
 
     python analysis/visualize.py
 
-This script uses the cleaned analysis results to generate the required charts and saves them in:
-
-    visualizations/
+This script reads the raw CSV files, applies the required cleaning and outlier-handling steps, and generates the required charts. The charts are saved in:
+visualizations/
 
 The generated charts are:
 
@@ -127,7 +126,7 @@ Simply run:
 If no `GEMINI_API_KEY` is configured, the program automatically uses the deterministic offline fallback.
 
 The offline fallback does not require an API key or network connection and generates the narrative directly from the verified findings.
-
+The script also runs a numerical accuracy check against five required findings and prints `FINAL CHECK: PASS` when all five checks pass.
 ## Complete Reproduction Order
 
 Follow these steps from top to bottom to reproduce the complete project:
