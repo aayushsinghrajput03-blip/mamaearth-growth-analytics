@@ -221,6 +221,17 @@ ax.plot(
     marker="o"
 )
 
+# Add exact revenue labels above each point
+for month, revenue in monthly_revenue.items():
+    ax.annotate(
+        f"₹{revenue:,.2f}",
+        xy=(month, revenue),
+        xytext=(0, 10),
+        textcoords="offset points",
+        ha="center",
+        fontsize=8
+    )
+
 ax.set_xlabel("Month")
 ax.set_ylabel("Revenue")
 
