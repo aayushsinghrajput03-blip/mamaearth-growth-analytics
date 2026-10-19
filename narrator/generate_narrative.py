@@ -136,7 +136,7 @@ def check_numeric_accuracy(narrative: str) -> bool:
     return all_passed
 
 if __name__ == "__main__":
-    findings_path = "findings.json"
+    findings_path = Path(__file__).resolve().parent / "findings.json"
 
     with open(findings_path, "r", encoding="utf-8") as file:
         findings = json.load(file)
