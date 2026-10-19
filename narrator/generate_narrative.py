@@ -1,6 +1,6 @@
 import json
 import os
-
+from pathlib import Path
 
 
 def generate_scr_narrative_offline(findings: dict) -> dict:
