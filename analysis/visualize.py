@@ -1,3 +1,4 @@
+
 import pandas as pd
 import matplotlib.pyplot as plt
 from pathlib import Path
@@ -8,14 +9,14 @@ from pathlib import Path
 # =========================================================
 
 if "__file__" in globals():
-    # When running as analysis/visualize.py from GitHub
+    # When running as analysis/visualize.py from the project
     BASE_DIR = Path(__file__).resolve().parents[1]
 else:
     # When running this code directly in Google Colab
     BASE_DIR = Path.cwd()
 
 
-# GitHub has data/ folder.
+# GitHub has a data/ folder.
 # In Colab, CSVs may be directly in the current folder.
 if (BASE_DIR / "data").exists():
     DATA_DIR = BASE_DIR / "data"
@@ -33,7 +34,7 @@ orders = pd.read_csv(DATA_DIR / "orders.csv")
 # =========================================================
 
 OUTPUT_DIR = BASE_DIR / "visualizations"
-OUTPUT_DIR.mkdir(exist_ok=True)
+OUTPUT_DIR.mkdir(parents=True, exist_ok=True)
 
 
 # =========================================================
@@ -144,7 +145,6 @@ bars = ax.bar(
     return_rates.values
 )
 
-
 # Add exact percentage to every bar
 for bar, value in zip(bars, return_rates.values):
     ax.text(
@@ -155,31 +155,30 @@ for bar, value in zip(bars, return_rates.values):
         va="bottom"
     )
 
-
 # Calculate COD vs CARD multiple
 cod_rate = return_rates["COD"]
 card_rate = return_rates["CARD"]
 cod_multiple = round(cod_rate / card_rate)
 
-
 ax.set_xlabel("Payment Method")
 ax.set_ylabel("Return Rate (%)")
 
 ax.set_title(
-    f"COD Returns at {cod_rate:.1f}% — {cod_multiple}x Card"
+    f"COD Returns at {cod_rate:.1f}% — {cod_multiple}x Card",
+    pad=12
 )
 
-plt.tight_layout()
-
+fig.tight_layout()
 
 # Save required PNG
-plt.savefig(
+fig.savefig(
     OUTPUT_DIR / "return_rate_by_payment.png",
     dpi=300,
     bbox_inches="tight"
 )
+
 plt.show()
-plt.close()
+plt.close(fig)
 
 
 # =========================================================
@@ -197,10 +196,7 @@ df["year_month"] = (
     .astype(str)
 )
 
-
-# IMPORTANT:
-# Exclude ONLY the flagged outliers from the
-# monthly revenue visualization.
+# Exclude only flagged outliers from the monthly chart.
 monthly_revenue = (
     df[~df["is_outlier"]]
     .groupby("year_month")["order_value"]
@@ -208,12 +204,10 @@ monthly_revenue = (
     .round(2)
 )
 
-
-# Find actual peak month
+# Find the actual peak month
 peak_month = monthly_revenue.idxmax()
 
-
-fig, ax = plt.subplots(figsize=(9, 5))
+fig, ax = plt.subplots(figsize=(10, 6))
 
 ax.plot(
     monthly_revenue.index,
@@ -233,25 +227,30 @@ for month, revenue in monthly_revenue.items():
     )
 
 ax.set_xlabel("Month")
-ax.set_ylabel("Revenue")
+ax.set_ylabel("Revenue (₹)")
 
 ax.set_title(
-    f"Monthly Revenue Trend — Actual Peak: {peak_month}"
+    f"Monthly Revenue Trend — Actual Peak: {peak_month}",
+    pad=20
 )
+
+# Add vertical space above the highest point.
+ax.margins(y=0.20)
 
 plt.xticks(rotation=45)
 
-plt.tight_layout()
-
+# Reserve room for the title and axis labels.
+fig.tight_layout(rect=[0, 0, 1, 0.95])
 
 # Save required PNG
-plt.savefig(
+fig.savefig(
     OUTPUT_DIR / "monthly_revenue_trend.png",
     dpi=300,
     bbox_inches="tight"
 )
+
 plt.show()
-plt.close()
+plt.close(fig)
 
 
 # =========================================================
@@ -272,11 +271,7 @@ print("\nActual peak month:", peak_month)
 
 print("\nFiles created:")
 
-print(
-    OUTPUT_DIR / "return_rate_by_payment.png"
-)
-print(
-    OUTPUT_DIR / "monthly_revenue_trend.png"
-)
+print(OUTPUT_DIR / "return_rate_by_payment.png")
+print(OUTPUT_DIR / "monthly_revenue_trend.png")
 
 print("\nBoth visualizations generated successfully.")
