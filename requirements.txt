@@ -1,3 +1,3 @@
-pandas
-matplotlib
-google-genai
+pandas==ACTUAL_VERSION
+matplotlib==ACTUAL_VERSION
+google-genai==ACTUAL_VERSION
